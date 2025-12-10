@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+body {
+  cursor: url("/cursor.png");
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #f2f4f7;
+  font-family: "PP Editorial New", sans-serif;
+}
+
+.font-lay {
+  font-family: "Lay Grotesk - Trial Medium", sans-serif;
+}
+.font-lay-normal {
+  font-family: "Lay Grotesk - Trial", sans-serif;
+}
+
+.font-edit {
+  font-family: "PP Editorial New", sans-serif;
+}
