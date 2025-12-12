@@ -1,5 +1,6 @@
 'use client'
 
+import COLOR_SCHEME from '@/utils/colors'
 import React, { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
@@ -16,7 +17,9 @@ const HeroSection = () => {
   const playingActionRef = useRef(false)
   const blinkIntervalRef = useRef(null)
 
-  const HIT_ANIMATIONS = ['avatara-hit-01', 'avatara-hit-01']
+  // Hit + Eye animations (restore as in your original file)
+  const HIT_ANIMATIONS = ['avatar-hit-01', 'avatar-hit-02']
+  const EYE_ANIMATIONS = ['eyes-hit-01', 'eyes-hit-02'] // eye animations restored
   const hitAnimationIndexRef = useRef(0)
 
   useEffect(() => {
@@ -30,33 +33,12 @@ const HeroSection = () => {
     const TILT_AMPLITUDE = 0.03
     const BLINK_INTERVAL_MS = 5000
 
-    const COLOR_SCHEMES = {
-      'Pure White': {
-        color1: new THREE.Vector3(0.95, 0.97, 1.0),
-        color2: new THREE.Vector3(1.0, 0.85, 0.88),
-        color3: new THREE.Vector3(0.9, 0.95, 1.0)
-      },
-      'RBW Frosted': {
-        color1: new THREE.Vector3(0.95, 0.97, 1.0),
-        color2: new THREE.Vector3(0.8, 0.3, 0.35),
-        color3: new THREE.Vector3(0.4, 0.55, 1.0)
-      },
-      'Ice Blue': {
-        color1: new THREE.Vector3(0.4, 0.7, 1.0),
-        color2: new THREE.Vector3(1.0, 0.5, 0.6),
-        color3: new THREE.Vector3(0.3, 0.9, 0.95)
-      },
-      'Fire Orange': {
-        color1: new THREE.Vector3(1.0, 0.4, 0.1),
-        color2: new THREE.Vector3(1.0, 0.7, 0.0),
-        color3: new THREE.Vector3(1.0, 0.2, 0.3)
-      }
-    }
+    const COLOR_SCHEMES = COLOR_SCHEME
 
     // GUI controls
     const gui = new GUI()
     const guiParams = {
-      colorScheme: 'RBW Frosted',
+      colorScheme: 'Apple White',
       intensity: 0.35,
       chromaticAberration: 0.012,
       fluidSpeed: 1.8,
@@ -99,9 +81,9 @@ const HeroSection = () => {
       colorSaturation: { value: guiParams.colorSaturation },
       turbulence: { value: guiParams.turbulence },
       pulseIntensity: { value: guiParams.pulseIntensity },
-      color1: { value: COLOR_SCHEMES['RBW Frosted'].color1 },
-      color2: { value: COLOR_SCHEMES['RBW Frosted'].color2 },
-      color3: { value: COLOR_SCHEMES['RBW Frosted'].color3 }
+      color1: { value: COLOR_SCHEMES['Apple White'].color1 },
+      color2: { value: COLOR_SCHEMES['Apple White'].color2 },
+      color3: { value: COLOR_SCHEMES['Apple White'].color3 }
     }
 
     const vertexShader = `
@@ -313,7 +295,7 @@ const HeroSection = () => {
       distortionUniforms.color2.value.copy(scheme.color2)
       distortionUniforms.color3.value.copy(scheme.color3)
     })
-    
+
     const distortionFolder = gui.addFolder('Distortion')
     distortionFolder.add(guiParams, 'intensity', 0, 1).onChange(v => distortionUniforms.intensity.value = v)
     distortionFolder.add(guiParams, 'chromaticAberration', 0, 0.03).onChange(v => distortionUniforms.chromaticAberration.value = v)
@@ -321,20 +303,20 @@ const HeroSection = () => {
     distortionFolder.add(guiParams, 'ringThickness', 0.05, 0.3).onChange(v => distortionUniforms.ringThickness.value = v)
     distortionFolder.add(guiParams, 'animationSpeed', 0.5, 2)
     distortionFolder.add(guiParams, 'triggerDistortion').name('Trigger Effect')
-    
+
     const fluidFolder = gui.addFolder('Fluid Motion')
     fluidFolder.add(guiParams, 'fluidSpeed', 0.5, 3).onChange(v => distortionUniforms.fluidSpeed.value = v)
     fluidFolder.add(guiParams, 'fluidFrequency', 1, 10).onChange(v => distortionUniforms.fluidFrequency.value = v)
     fluidFolder.add(guiParams, 'fluidAmplitude', 0, 0.2).onChange(v => distortionUniforms.fluidAmplitude.value = v)
     fluidFolder.add(guiParams, 'turbulence', 0, 1).onChange(v => distortionUniforms.turbulence.value = v)
     fluidFolder.add(guiParams, 'pulseIntensity', 0, 0.3).onChange(v => distortionUniforms.pulseIntensity.value = v)
-    
+
     const colorFolder = gui.addFolder('Colors')
     colorFolder.add(guiParams, 'glowIntensity', 0, 1.5).onChange(v => distortionUniforms.glowIntensity.value = v)
     colorFolder.add(guiParams, 'rimBrightness', 0, 1.5).onChange(v => distortionUniforms.rimBrightness.value = v)
     colorFolder.add(guiParams, 'centerFlashIntensity', 0, 2).onChange(v => distortionUniforms.centerFlashIntensity.value = v)
     colorFolder.add(guiParams, 'colorSaturation', 0, 2).onChange(v => distortionUniforms.colorSaturation.value = v)
-    
+
     const chromaticFolder = gui.addFolder('Chromatic')
     chromaticFolder.add(guiParams, 'redShift', -0.03, 0.03).onChange(v => distortionUniforms.redShift.value = v)
     chromaticFolder.add(guiParams, 'blueShift', -0.03, 0.03).onChange(v => distortionUniforms.blueShift.value = v)
@@ -358,7 +340,7 @@ const HeroSection = () => {
     const vFov = (camera.fov * Math.PI) / 180
     const planeHeight = 2 * Math.tan(vFov / 2) * distance
     const planeWidth = planeHeight * camera.aspect
-    
+
     const bgGeometry = new THREE.PlaneGeometry(planeWidth, planeHeight)
     const bgMaterial = new THREE.ShaderMaterial({
       uniforms: distortionUniforms,
@@ -366,19 +348,19 @@ const HeroSection = () => {
       fragmentShader: fragmentShader,
       side: THREE.DoubleSide
     })
-    
+
     const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial)
     bgMesh.position.z = -10
     bgMesh.renderOrder = 0
     scene.add(bgMesh)
 
     // Optimized renderer settings
-    const renderer = new THREE.WebGLRenderer({ 
+    const renderer = new THREE.WebGLRenderer({
       antialias: true,
-      alpha: true, 
+      alpha: true,
       powerPreference: 'high-performance'
     })
-    
+
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)) // Limit pixel ratio
     renderer.toneMapping = THREE.ReinhardToneMapping
     renderer.toneMappingExposure = 2
@@ -414,7 +396,7 @@ const HeroSection = () => {
     const clock = new THREE.Clock()
 
     loader.load(
-      '/head2.glb',
+      '/model.glb',
       (gltf) => {
         const model = gltf.scene
         modelRef.current = model
@@ -470,16 +452,94 @@ const HeroSection = () => {
           prevActionRef.current = action
         }
 
-        // Click handler
+        // Function to play eye animation synchronized with hit
+        const playEyeAnimation = (eyeAnimationName) => {
+          const eyeAction = actionsRef.current[eyeAnimationName]
+          if (!eyeAction) {
+            console.warn(`Eye animation "${eyeAnimationName}" not found`)
+            return
+          }
+
+          // Reset and configure eye animation
+          eyeAction.reset()
+          eyeAction.setLoop(THREE.LoopOnce, 0)
+          eyeAction.enabled = true
+          eyeAction.setEffectiveTimeScale(1)
+          eyeAction.setEffectiveWeight(1)
+          
+          // Play immediately - no crossfade for eye animations
+          eyeAction.play()
+          
+          // Set to idle after animation completes
+          eyeAction.clampWhenFinished = true
+          eyeAction.paused = false
+        }
+
+        //--------------------------------------------------------
+        // 🔥 AUTO SHAKE (EVERY 5 SECONDS OF INACTIVITY)
+        //--------------------------------------------------------
+
+        let lastInteractionTime = performance.now();
+        const SHAKE_INTERVAL = 5000; // 5s
+
+        // Exact animation names from your screenshot
+        const HEAD_SHAKE = 'gio-head-shake';
+        const EYE_SHAKE = 'gio-eyes-shake';
+
+        // Detect any user interaction
+        window.addEventListener('click', () => {
+          lastInteractionTime = performance.now();
+        });
+
+        // Function to play shake animations together
+        const playIdleShake = () => {
+          // If a hit or any action is busy, do NOT shake
+          if (playingActionRef.current) return;
+
+          // Play head shake
+          const head = actionsRef.current[HEAD_SHAKE];
+          if (head) {
+            playAction(HEAD_SHAKE, { isClick: false });
+          }
+
+          // Play eye shake immediately
+          const eyes = actionsRef.current[EYE_SHAKE];
+          if (eyes) {
+            playEyeAnimation(EYE_SHAKE);
+          }
+        };
+
+        // Check every second if user is idle
+        setInterval(() => {
+          const now = performance.now();
+          const idle = now - lastInteractionTime;
+
+          if (idle > SHAKE_INTERVAL && !playingActionRef.current) {
+            playIdleShake();
+            lastInteractionTime = performance.now();
+          }
+        }, 1000);
+
+        // Click handler - triggers both head animation and eye animation
         const clickHandler = () => {
           if (HIT_ANIMATIONS.length === 0) return
 
           const nextIndex = hitAnimationIndexRef.current % HIT_ANIMATIONS.length
           const nextAnimationName = HIT_ANIMATIONS[nextIndex]
+          
+          // Get corresponding eye animation
+          const eyeAnimationName = EYE_ANIMATIONS[nextIndex] || 
+                                 EYE_ANIMATIONS[0] || 
+                                 Object.keys(actionsRef.current).find(name => name.includes('eyes'))
 
+          // Play both animations
           playAction(nextAnimationName, { isClick: true })
+          
+          if (eyeAnimationName) {
+            playEyeAnimation(eyeAnimationName)
+          }
 
-          // Reset distortion effect
+          // Reset distortion effect to trigger animation
           distortionUniforms.distortionTime.value = 0.0
 
           hitAnimationIndexRef.current = (nextIndex + 1) % HIT_ANIMATIONS.length
@@ -488,9 +548,15 @@ const HeroSection = () => {
         window.addEventListener('click', clickHandler)
         model.userData._clickHandler = clickHandler
 
-        mixer.addEventListener('finished', () => {
-          playingActionRef.current = false
-        })
+        // Track when animations finish to reset playing state
+        let activeAnimationsCount = 0
+        
+        // Correct animation finish listener
+        mixer.addEventListener('finished', (event) => {
+          // Reset playing flag when ANY clip finishes
+          playingActionRef.current = false;
+        });
+
 
         if (blinkName) {
           blinkIntervalRef.current = setInterval(() => {
@@ -564,7 +630,7 @@ const HeroSection = () => {
       if (renderer && renderer.domElement && container.contains(renderer.domElement))
         container.removeChild(renderer.domElement)
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <section ref={containerRef} className="w-full h-screen relative">
